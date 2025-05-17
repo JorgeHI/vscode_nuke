@@ -1,0 +1,95 @@
+# -*- coding: utf-8 -*-
+import nuke
+if nuke.NUKE_VERSION_MAJOR < 11:
+    # PySide for Nuke up to 10
+    from PySide import QtCore, QtNetwork 
+    pyside_version = 1
+elif nuke.NUKE_VERSION_MAJOR < 16:
+    # PySide2 for default Nuke 11
+    from PySide2 import QtCore, QtNetwork 
+    pyside_version = 2
+else:
+    # PySide6 for Nuke 16+
+    from PySide6 import QtCore, QtNetwork 
+    pyside_version = 6
+
+class NukeTcpServer(QtCore.QObject):
+    def __init__(self, port=8080, parent=None):
+        super(NukeTcpServer, self).__init__(parent)
+        self.port = port
+        self.server = QtNetwork.QTcpServer(self)
+        self.server.newConnection.connect(self.handle_new_connection)
+
+        if not self.server.listen(QtNetwork.QHostAddress.LocalHost, self.port):
+            nuke.message(f"Error: Could not start server on port {self.port}")
+        else:
+            print(f"NkScriptEditor TCP server started on port {self.port}")
+
+        self.connections = []
+
+    def handle_new_connection(self):
+        client_socket = self.server.nextPendingConnection()
+        client_socket.readyRead.connect(lambda: self.read_data(client_socket))
+        client_socket.disconnected.connect(lambda: self.remove_connection(client_socket))
+        self.connections.append(client_socket)
+        print("New connection accepted.")
+
+    def read_data(self, socket):
+        while socket.bytesAvailable():
+            data = socket.readAll().data()
+            print(f"Received: {data}")
+            if len(data) >= 8:
+                expected_len = int(data[:8].decode())
+                if len(data) >= expected_len + 8:
+                    message = data[8:expected_len+8].decode()
+                    self.execute_command(message)
+            
+    def read(self, timeout_msecs=5000):
+        if not self._client_socket:
+            return None, ReadState.DISCONNECTED
+
+        start_time = time.time()
+        timeout = timeout_msecs / 1000
+
+        try:
+            data = b""
+            while True:
+                try:
+                    chunk = self._client_socket.recv(4096)
+                except BlockingIOError:
+                    # No data available yet on non-blocking socket
+                    return None, ReadState.WAITING
+                if not chunk:
+                    self._cleanup_client_connection()
+                    return None, ReadState.DISCONNECTED
+
+                data += chunk
+
+                if len(data) >= 8:
+                    expected_len = int(data[:8].decode())
+                    if len(data) >= expected_len + 8:
+                        message = data[8:expected_len+8].decode()
+                        return message, ReadState.MESSAGE
+
+                if time.time() - start_time > timeout:
+                    return None, ReadState.ERROR
+        except Exception as e:
+            LOG.error(f"[VSCodePort] Error reading from client: {e}")
+            self._cleanup_client_connection()
+            return None, ReadState.ERROR
+    def remove_connection(self, socket):
+        print("Connection closed.")
+        if socket in self.connections:
+            self.connections.remove(socket)
+            socket.deleteLater()
+
+    def execute_command(self, command):
+        """
+        Ejecuta el comando recibido como código Python dentro de Nuke.
+        """
+        try:
+            exec(command, globals(), locals())
+        except Exception as e:
+            nuke.message(f"Error executing command:\n{e}")
+            print(e)
+
