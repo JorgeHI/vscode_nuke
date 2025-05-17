@@ -1,27 +1,27 @@
 {
-  "name": "sendtoblender",
-  "displayName": "Send to Blender",
-  "description": "An extension to send code to Blender.",
+  "name": "nukeconnect",
+  "displayName": "Nuke Connect",
+  "description": "An extension to send code to Nuke.",
   "version": "1.0.0",
-  "publisher": "minimalefforttech",
+  "publisher": "jorgehi",
   "author": {
-    "name": "Alex Telford"
+    "name": "Jorge Hernandez Ibañez"
   },
   "license": "MIT",
-  "homepage": "https://github.com/minimalefforttech/vscode_blender_port",
+  "homepage": "https://github.com/jorgehi/vscode_nuke",
   "repository": {
     "type": "git",
-    "url": "https://github.com/minimalefforttech/vscode_blender_port"
+    "url": "https://github.com/minimalefforttech/vscode_nuke"
   },
   "bugs": {
-    "url": "https://github.com/minimalefforttech/vscode_blender_port/issues"
+    "url": "https://github.com/jorgehi/vscode_nuke/issues"
   },
   "icon": "icon.png",
   "engines": {
     "vscode": "^1.20.0"
   },
   "keywords": [
-    "blender",
+    "nuke",
     "python"
   ],
   "categories": [
@@ -44,46 +44,46 @@
   "contributes": {
     "commands": [
       {
-        "command": "sendtoblender.sendPythonToBlender",
-        "title": "Send Python Code to Blender",
-        "category": "Blender"
+        "command": "nukeconnect.sendPythonToNuke",
+        "title": "Send Python Code to Nuke",
+        "category": "Nuke"
       },
       {
-        "command": "sendtoblender.printSelectedInBlender",
+        "command": "nukeconnect.printSelectedInNuke",
         "title": "Print the selected variable in Output console",
-        "category": "Blender"
+        "category": "Nuke"
       },
       {
-        "command": "sendtoblender.prettyPrintSelectedInBlender",
+        "command": "nukeconnect.prettyPrintSelectedInNuke",
         "title": "Pretty print the selected variable in Output console",
-        "category": "Blender"
+        "category": "Nuke"
       },
       {
-        "command": "sendtoblender.describeSelectedInBlender",
+        "command": "nukeconnect.describeSelectedInNuke",
         "title": "Describe the selected variable (with signatures) in Output console",
-        "category": "Blender"
+        "category": "Nuke"
       },
       {
-        "command": "sendtoblender.printHelpInBlender",
+        "command": "nukeconnect.printHelpInNuke",
         "title": "Show help for the selected variable in Output console",
-        "category": "Blender"
+        "category": "Nuke"
       }
     ],
     "configuration": {
       "type": "object",
-      "title": "Send to Blender",
+      "title": "Nuke Connect",
       "properties": {
-        "sendtoblender.hostname": {
+        "nukeconnect.hostname": {
           "type": "string",
           "default": "localhost",
-          "description": "The hostname of the machine running Blender"
+          "description": "The hostname of the machine running Nuke"
         },
-        "sendtoblender.port": {
+        "nukeconnect.port": {
           "type": "integer",
           "default": 8080,
-          "description": "The port over which to send Python commands to Blender"
+          "description": "The port over which to send Python commands to Nuke"
         },
-        "sendtoblender.telemetry": {
+        "nukeconnect.telemetry": {
           "type": "boolean",
           "default": true
         }
