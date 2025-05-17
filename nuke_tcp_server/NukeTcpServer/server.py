@@ -23,7 +23,7 @@ class NukeTcpServer(QtCore.QObject):
         if not self.server.listen(QtNetwork.QHostAddress.LocalHost, self.port):
             nuke.message(f"Error: Could not start server on port {self.port}")
         else:
-            print(f"NkScriptEditor TCP server started on port {self.port}")
+            print(f"Nuke Connect TCP server started on port {self.port}")
 
         self.connections = []
 
@@ -44,39 +44,6 @@ class NukeTcpServer(QtCore.QObject):
                     message = data[8:expected_len+8].decode()
                     self.execute_command(message)
             
-    def read(self, timeout_msecs=5000):
-        if not self._client_socket:
-            return None, ReadState.DISCONNECTED
-
-        start_time = time.time()
-        timeout = timeout_msecs / 1000
-
-        try:
-            data = b""
-            while True:
-                try:
-                    chunk = self._client_socket.recv(4096)
-                except BlockingIOError:
-                    # No data available yet on non-blocking socket
-                    return None, ReadState.WAITING
-                if not chunk:
-                    self._cleanup_client_connection()
-                    return None, ReadState.DISCONNECTED
-
-                data += chunk
-
-                if len(data) >= 8:
-                    expected_len = int(data[:8].decode())
-                    if len(data) >= expected_len + 8:
-                        message = data[8:expected_len+8].decode()
-                        return message, ReadState.MESSAGE
-
-                if time.time() - start_time > timeout:
-                    return None, ReadState.ERROR
-        except Exception as e:
-            LOG.error(f"[VSCodePort] Error reading from client: {e}")
-            self._cleanup_client_connection()
-            return None, ReadState.ERROR
     def remove_connection(self, socket):
         print("Connection closed.")
         if socket in self.connections:
