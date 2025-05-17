@@ -13,7 +13,13 @@ else:
     from PySide6 import QtCore, QtNetwork 
     pyside_version = 6
 
+import nkLogger
+
+logger = nkLogger.getLogger(__name__)
+
 class NukeTcpServer(QtCore.QObject):
+    serverStateChanged = QtCore.Signal(bool)
+
     def __init__(self, port=8080, parent=None):
         super(NukeTcpServer, self).__init__(parent)
         self.port = port
@@ -21,9 +27,9 @@ class NukeTcpServer(QtCore.QObject):
         self.server.newConnection.connect(self.handle_new_connection)
 
         if not self.server.listen(QtNetwork.QHostAddress.LocalHost, self.port):
-            nuke.message(f"Error: Could not start server on port {self.port}")
+            logger.error(f"Could not start server on port {self.port}")
         else:
-            print(f"Nuke Connect TCP server started on port {self.port}")
+            logger.info(f"Nuke Connect TCP server started on port {self.port}")
 
         self.connections = []
 
