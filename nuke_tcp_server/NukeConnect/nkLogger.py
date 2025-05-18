@@ -1,9 +1,9 @@
 # -----------------------------------------------------------------------------
-# Nk Script Editor for Nuke
+# VSCode connection to Nuke plugin
 # Copyright (c) 2025 Jorge Hernandez Ibañez
 #
-# This file is part of the Nk Script Editor project.
-# Repository: https://github.com/JorgeHI/NkScriptEditor
+# This file is part of the Nuke connect for vscode project.
+# Repository: https://github.com/JorgeHI/vscode_nuke
 #
 # This file is licensed under the MIT License.
 # See the LICENSE file in the root of this repository for details.

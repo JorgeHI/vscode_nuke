@@ -1,4 +1,13 @@
-# -*- coding: utf-8 -*-
+# -----------------------------------------------------------------------------
+# VSCode connection to Nuke plugin
+# Copyright (c) 2025 Jorge Hernandez Ibañez
+#
+# This file is part of the Nuke connect for vscode project.
+# Repository: https://github.com/JorgeHI/vscode_nuke
+#
+# This file is licensed under the MIT License.
+# See the LICENSE file in the root of this repository for details.
+# -----------------------------------------------------------------------------
 import nuke
 if nuke.NUKE_VERSION_MAJOR < 11:
     # PySide for Nuke up to 10
@@ -13,7 +22,7 @@ else:
     from PySide6 import QtCore, QtNetwork 
     pyside_version = 6
 
-import NukeTcpServer.nkLogger as nkLogger
+import NukeConnect.nkLogger as nkLogger
 logger = nkLogger.getLogger(__name__)
 
 class NukeTcpServer(QtCore.QObject):
