@@ -13,48 +13,63 @@ else:
     from PySide6 import QtCore, QtNetwork 
     pyside_version = 6
 
-import nkLogger
-
+import NukeTcpServer.nkLogger as nkLogger
 logger = nkLogger.getLogger(__name__)
 
 class NukeTcpServer(QtCore.QObject):
     serverStateChanged = QtCore.Signal(bool)
 
-    def __init__(self, port=8080, parent=None):
+    def __init__(self, parent=None):
         super(NukeTcpServer, self).__init__(parent)
-        self.port = port
         self.server = QtNetwork.QTcpServer(self)
-        self.server.newConnection.connect(self.handle_new_connection)
 
+        self.port = 8080
+        self.connection = None
+        self.server.newConnection.connect(self.handle_connection)
+        self.running = False
+
+    def init(self):
+        prefs = nuke.toNode('preferences')
+        if prefs is None:
+            logger.warning("Preferences node not found. Nuke Connect server will not start.")
+            return
+        port_knob = prefs.knob("nuke_connect_port")
+        startup_on = prefs.knob("nuke_connect_auto_startup")
+        if port_knob is not None:
+            self.port = port_knob.value()
+        if startup_on is not None:
+            if startup_on.value():
+                self.start()
+
+    def start(self):
         if not self.server.listen(QtNetwork.QHostAddress.LocalHost, self.port):
             logger.error(f"Could not start server on port {self.port}")
-        else:
-            logger.info(f"Nuke Connect TCP server started on port {self.port}")
+            self.running =  False
+        logger.info(f"Nuke Connect TCP server listening on port {self.port}")
+        self.running =  True
+        return self.running
 
-        self.connections = []
+    def stop(self):
+        self.server.close()
+        self.running = False
+        logger.info("Nuke Connect TCP server stopped.")
+        return self.running
+    
+    def is_running(self):
+        return self.running
 
-    def handle_new_connection(self):
-        client_socket = self.server.nextPendingConnection()
-        client_socket.readyRead.connect(lambda: self.read_data(client_socket))
-        client_socket.disconnected.connect(lambda: self.remove_connection(client_socket))
-        self.connections.append(client_socket)
-        print("New connection accepted.")
+    def handle_connection(self):
+        self.connection = self.server.nextPendingConnection()
+        self.connection.readyRead.connect(self.read_data)
 
     def read_data(self, socket):
-        while socket.bytesAvailable():
+        if self.connection:
             data = socket.readAll().data()
-            print(f"Received: {data}")
             if len(data) >= 8:
                 expected_len = int(data[:8].decode())
                 if len(data) >= expected_len + 8:
                     message = data[8:expected_len+8].decode()
                     self.execute_command(message)
-            
-    def remove_connection(self, socket):
-        print("Connection closed.")
-        if socket in self.connections:
-            self.connections.remove(socket)
-            socket.deleteLater()
 
     def execute_command(self, command):
         """
@@ -63,6 +78,5 @@ class NukeTcpServer(QtCore.QObject):
         try:
             exec(command, globals(), locals())
         except Exception as e:
-            nuke.message(f"Error executing command:\n{e}")
-            print(e)
+            logger.error(f"Error executing command:\n{e}")
 
