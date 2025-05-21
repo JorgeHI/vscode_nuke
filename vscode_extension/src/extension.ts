@@ -1,6 +1,6 @@
 'use strict';
-// Copyright (c) 2025 Alex Telford. All rights reserved.
-// This code is derived from https://github.com/artbycrunk/vscode-maya/blob/master/src/extension.ts
+// Copyright (c) 2025 Jorge Hernandez. All rights reserved.
+// This code is derived from https://github.com/minimalefforttech/vscode_blender_port/blob/main/vscode_extension/src/extension.ts
 import * as vscode from 'vscode';
 import { Socket } from 'net';
 import * as os from 'os';

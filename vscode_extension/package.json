@@ -1,7 +1,7 @@
 {
   "name": "nukeconnect",
   "displayName": "Nuke Connect",
-  "description": "An extension to send code to Nuke.",
+  "description": "An extension to send code to Nuke. Original code by Alex Telford, adapted by Jorge Hernandez Ibañez.",
   "version": "1.0.0",
   "publisher": "jorgehi",
   "author": {
@@ -11,7 +11,7 @@
   "homepage": "https://github.com/jorgehi/vscode_nuke",
   "repository": {
     "type": "git",
-    "url": "https://github.com/minimalefforttech/vscode_nuke"
+    "url": "https://github.com/jorgehi/vscode_nuke"
   },
   "bugs": {
     "url": "https://github.com/jorgehi/vscode_nuke/issues"
