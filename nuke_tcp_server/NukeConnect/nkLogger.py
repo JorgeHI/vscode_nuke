@@ -10,6 +10,9 @@
 # -----------------------------------------------------------------------------
 import logging
 
+
+LOGGER_LEVEL = logging.DEBUG
+
 class NukeHandler(logging.Handler):
     """
     Custom logging handler that outputs log messages to Nuke's Script Editor.
@@ -50,15 +53,15 @@ def getLogger(module_name):
     """
     # Create a logger for this module
     logger = logging.getLogger(module_name)
-    logger.setLevel(logging.DEBUG)  # Set minimum log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    logger.setLevel(LOGGER_LEVEL)  # Set minimum log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
     logger.propagate = False
     # Create console handler and set its log level
     ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
+    ch.setLevel(LOGGER_LEVEL)
 
     # Create formatter and attach it to the handler
     formatter = logging.Formatter(
-        '%(asctime)s - %(levelname)s:NkSE:%(name)s: %(message)s',
+        '%(asctime)s - %(levelname)s:NC:%(name)s: %(message)s',
         datefmt='%H:%M:%S'
     )
     ch.setFormatter(formatter)
@@ -67,7 +70,7 @@ def getLogger(module_name):
     logger.addHandler(ch)
 
     nh = NukeHandler()
-    nh.setLevel(logging.DEBUG)
+    nh.setLevel(LOGGER_LEVEL)
     nh.setFormatter(formatter)
     logger.addHandler(nh)
 
